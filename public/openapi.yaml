@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
     title: Web3 Plugin
-    description: A plugin that allows the user to generate crypto wallets and execute actions on chain. If you do not know the seedphrase, ask user for it before making requests or offer to generate a new wallet for user.
+    description: A plugin that allows the user to generate crypto wallets and execute actions on ethereum or compatible networks. If you do not know the seedphrase, ask user for it before making requests or offer to generate a new wallet for user. If you do not know the network use Ethereum as default. Available networks are Ethereum, Polygon, Optimism, Gnosis and Linea
     version: "v1"
 servers:
     - url: http://localhost:4000
@@ -11,6 +11,12 @@ paths:
         post:
             operationId: generateWallet
             summary: Generate a new crypto wallet
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/walletRequest"
             responses:
                 "200":
                     description: OK
@@ -49,6 +55,30 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/HTTPValidationError"
 
+    /wallets/wallettransfer:
+        post:
+            operationId: walletTransfer
+            summary: Send value from wallet to address
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/walletTransferRequest"
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/WalletTransfer"
+                "422":
+                    description: Validation Error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/HTTPValidationError"
+
     /wallets/walletbalance:
         post:
             operationId: walletBalance
@@ -77,12 +107,21 @@ components:
     schemas:
 
         # wallet creation
+        walletRequest:
+            type: object
+            properties:
+                network:
+                    type: string
+                    description: The wallet network
         WalletInfo:
             type: object
             properties:
                 seedphrase:
                     type: string
                     description: The seedphrase of wallet
+                network:
+                    type: string
+                    description: Targeted network
                 address:
                     type: string
                     description: The address of wallet
@@ -94,12 +133,41 @@ components:
                 seedphrase:
                     type: string
                     description: The wallet seedphrase
+                network:
+                    type: string
+                    description: Targeted network
         WalletAddress:
             type: object
             properties:
                 address:
                     type: string
                     description: The address of wallet
+
+        # wallet transfer
+        walletTransferRequest:
+            type: object
+            properties:
+                seedphrase:
+                    type: string
+                    description: The wallet seedphrase
+                network:
+                    type: string
+                    description: Targeted network
+                address:
+                    type: string
+                    description: Address we are sending or transfering to
+                amount:
+                    type: string
+                    description: Amount of value to send
+        WalletTransfer:
+            type: object
+            properties:
+                transactionId:
+                    type: string
+                    description: Transaction hash on-chain
+                transactionLink:
+                    type: string
+                    description: Link to transaction on block exporer
 
         # wallet balances
         walletBalanceRequest:
@@ -108,13 +176,16 @@ components:
                 seedphrase:
                     type: string
                     description: The wallet seedphrase
+                network:
+                    type: string
+                    description: Targeted network
         WalletBalance:
             type: object
             properties:
                 balance:
                     type: string
                     description: The balance of wallet
-        
+
         # error handling
         HTTPValidationError:
             title: HTTPValidationError
