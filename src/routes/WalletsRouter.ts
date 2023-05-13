@@ -117,6 +117,7 @@ export class WalletsRouter {
       const provider = new providers.JsonRpcProvider(network.rpc)
       const web3Provider = web3Wallet.connect(provider)
       const tx = await web3Provider.sendTransaction({from: web3Wallet.address, to: req.body.address, value: fromDisplayBalance(req.body.amount, '18')})
+      await tx.wait()
       return res.send({ transactionId: tx.hash, transactionLink: network.txexplorer + tx.hash })
     } catch (e) {
       return res.status(500)

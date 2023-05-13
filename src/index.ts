@@ -8,6 +8,7 @@ import {
 } from './logger'
 
 import WalletsRouter from './routes/WalletsRouter'
+import ContractsRouter from './routes/ContractsRouter'
 
 const PORT = 4000
 
@@ -25,6 +26,7 @@ const main = async () => {
   app.use('/.well-known', express.static('public'))
   // dynamic routes
   app.use('/wallets', WalletsRouter)
+  app.use('/contracts', ContractsRouter)
   // error logger
   app.use(expressErrorLogger)
   // error handler

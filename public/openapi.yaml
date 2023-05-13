@@ -103,6 +103,31 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/HTTPValidationError"
 
+
+    /contracts/deploycontract:
+        post:
+            operationId: deployContract
+            summary: Deploy a smart contract
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/deployContractRequest"
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/deployContract"
+                "422":
+                    description: Validation Error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/HTTPValidationError"
+
 components:
     schemas:
 
@@ -185,6 +210,32 @@ components:
                 balance:
                     type: string
                     description: The balance of wallet
+
+        # deploy contract
+        deployContractRequest:
+            type: object
+            properties:
+                seedphrase:
+                    type: string
+                    description: The wallet seedphrase
+                network:
+                    type: string
+                    description: Targeted network
+                code:
+                    type: string
+                    description: Solidity code to be deployed
+        deployContract:
+            type: object
+            properties:
+                abi:
+                    type: string
+                    description: ABIs of a deployed smart contract
+                address:
+                    type: string
+                    description: Address of deployed smart contract
+                detailsLink:
+                    type: string
+                    description: Link to transaction on block exporer
 
         # error handling
         HTTPValidationError:
