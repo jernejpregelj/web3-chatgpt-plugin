@@ -1,6 +1,6 @@
 import express from 'express'
 import { body, validationResult, param } from 'express-validator'
-import ethers, { utils, Wallet } from 'ethers'
+import ethers, { utils, Wallet, providers } from 'ethers'
 
 export class WalletsRouter {
   router: express.Router
@@ -24,11 +24,11 @@ export class WalletsRouter {
     return res.send({ seedphrase, address: web3Wallet.address })
   }
 
-  createWalletWithSeedphraseInputs = [
+  walletAddressFromSeedphraseInputs = [
     body('seedphrase').isString().notEmpty()
   ]
 
-  public async createWalletWithSeedphrase (req: express.Request, res: express.Response) {
+  public async walletAddressFromSeedphrase (req: express.Request, res: express.Response) {
     // validations
     const result = validationResult(req)
     if (!result.isEmpty()) {
@@ -36,12 +36,31 @@ export class WalletsRouter {
     }
     // execute
     const web3Wallet = await Wallet.fromMnemonic(req.body.seedphrase, "m/44'/60'/0'/0/0")
-    return res.send({ seedphrase: req.body.seedphrase, address: web3Wallet.address })
+    return res.send({ address: web3Wallet.address })
+  }
+
+  walletBalanceForSeedphraseInputs = [
+    body('seedphrase').isString().notEmpty(),
+  ]
+
+  public async walletBalanceForSeedphrase (req: express.Request, res: express.Response) {
+    // validations
+    const result = validationResult(req)
+    if (!result.isEmpty()) {
+      return res.status(422).send({ errors: result.array() });
+    }
+    // execute
+    const web3Wallet = await Wallet.fromMnemonic(req.body.seedphrase, "m/44'/60'/0'/0/0")
+    const provider = new providers.JsonRpcProvider('https://ethereum.publicnode.com')
+    const balance = (await provider.getBalance(web3Wallet.address)).toString()
+    // get balance
+    return res.send({ balance })
   }
 
   init () {
     this.router.post('/', this.createWalletInputs, this.createWallet)
-    this.router.post('/seedphrase', this.createWalletWithSeedphraseInputs, this.createWalletWithSeedphrase)
+    this.router.post('/walletaddress', this.walletAddressFromSeedphraseInputs, this.walletAddressFromSeedphrase)
+    this.router.post('/walletbalance', this.walletBalanceForSeedphraseInputs, this.walletBalanceForSeedphrase)
   }
 }
 

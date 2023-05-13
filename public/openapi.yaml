@@ -6,6 +6,7 @@ info:
 servers:
     - url: http://localhost:4000
 paths:
+
     /wallets:
         post:
             operationId: generateWallet
@@ -23,8 +24,98 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/HTTPValidationError"
+
+    /wallets/walletaddress:
+        post:
+            operationId: walletAddress
+            summary: Get a wallet address
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/walletAddressRequest"
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/WalletAddress"
+                "422":
+                    description: Validation Error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/HTTPValidationError"
+
+    /wallets/walletbalance:
+        post:
+            operationId: walletBalance
+            summary: Get a wallet balance
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/walletBalanceRequest"
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/WalletBalance"
+                "422":
+                    description: Validation Error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/HTTPValidationError"
+
 components:
     schemas:
+
+        # wallet creation
+        WalletInfo:
+            type: object
+            properties:
+                seedphrase:
+                    type: string
+                    description: The seedphrase of wallet
+                address:
+                    type: string
+                    description: The address of wallet
+
+        # wallet address
+        walletAddressRequest:
+            type: object
+            properties:
+                seedphrase:
+                    type: string
+                    description: The wallet seedphrase
+        WalletAddress:
+            type: object
+            properties:
+                address:
+                    type: string
+                    description: The address of wallet
+
+        # wallet balances
+        walletBalanceRequest:
+            type: object
+            properties:
+                seedphrase:
+                    type: string
+                    description: The wallet seedphrase
+        WalletBalance:
+            type: object
+            properties:
+                balance:
+                    type: string
+                    description: The balance of wallet
+        
+        # error handling
         HTTPValidationError:
             title: HTTPValidationError
             type: object
@@ -55,13 +146,4 @@ components:
                 type:
                     title: Error Type
                     type: string
-        WalletInfo:
-            type: object
-            properties:
-                seedphrase:
-                    type: string
-                    description: The seedphrase of wallet
-                address:
-                    type: string
-                    description: The address of wallet
                 
