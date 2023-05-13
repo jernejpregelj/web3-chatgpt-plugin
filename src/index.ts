@@ -1,32 +1,30 @@
 import express from 'express'
 import helmet from 'helmet'
 import compression from 'compression'
+import cors from 'cors'
 import {
   expressLogger,
   expressErrorLogger
 } from './logger'
 
+import WalletsRouter from './routes/WalletsRouter'
+
 const PORT = 4000
 
 const main = async () => {
-  // https express server
+  // express server
   const app = express()
-  // middleware
-  app.use((req, res, next) => {
-    // headers
-    res.header('Access-Control-Allow-Origin', '*')
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
-    next()
-  })
+  app.use(cors())
   app.use(express.urlencoded({ extended: true }))
   app.use(express.json())
   app.use(compression())
   app.use(helmet())
   // logger
   app.use(expressLogger)
-  // routes
-  // TODO: handle routes
+  // static info routes
+  app.use('/.well-known', express.static('public'))
+  // dynamic routes
+  app.use('/wallets', WalletsRouter)
   // error logger
   app.use(expressErrorLogger)
   // error handler

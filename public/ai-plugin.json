@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_model": "web3",
+  "name_for_human": "Web3 plugin for ChatGPT",
+  "description_for_model": "Plugin for creating blockchain wallets, retrieving and executing actions on ethereum network and other compatible chains",
+  "description_for_human": "All in one Web3 plugin",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "http://localhost:4000/.well-known/openapi.yaml",
+    "has_user_authentication": false
+  },
+  "logo_url": "https://github.com/openai/chatgpt-retrieval-plugin/blob/main/local-server/logo.png",
+  "contact_email": "hello@contact.com", 
+  "legal_info_url": "http://example.com/legal-info"
+}

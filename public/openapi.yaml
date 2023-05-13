@@ -1,0 +1,67 @@
+openapi: 3.0.1
+info:
+    title: Web3 Plugin
+    description: A plugin that allows the user to generate crypto wallets and execute actions on chain. If you do not know the seedphrase, ask user for it before making requests or offer to generate a new wallet for user.
+    version: "v1"
+servers:
+    - url: http://localhost:4000
+paths:
+    /wallets:
+        post:
+            operationId: generateWallet
+            summary: Generate a new crypto wallet
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/WalletInfo"
+                "422":
+                    description: Validation Error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/HTTPValidationError"
+components:
+    schemas:
+        HTTPValidationError:
+            title: HTTPValidationError
+            type: object
+            properties:
+                errors:
+                    title: errors
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/ValidationError"
+        ValidationError:
+            title: ValidationError
+            required:
+                - location
+                - msg
+                - path
+                - type
+            type: object
+            properties:
+                location:
+                    title: Location
+                    type: string
+                msg:
+                    title: Message
+                    type: string
+                path:
+                    title: Path
+                    type: string
+                type:
+                    title: Error Type
+                    type: string
+        WalletInfo:
+            type: object
+            properties:
+                seedphrase:
+                    type: string
+                    description: The seedphrase of wallet
+                address:
+                    type: string
+                    description: The address of wallet
+                
